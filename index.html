@@ -145,6 +145,14 @@
             background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
             border-radius: inherit;
         }
+
+        /* Google Translate Gizleme Stilleri (Özel Arayüz İçin) */
+        .goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon, .goog-te-gadget-simple img { display: none !important; }
+        body { top: 0px !important; }
+        .goog-tooltip { display: none !important; }
+        .goog-tooltip:hover { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; border: none !important; box-shadow: none !important; }
+        #google_translate_element { display: none !important; }
     </style>
 </head>
 <body class="bg-white text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
@@ -172,6 +180,11 @@
 
                 <!-- Acil Butonu (Masaüstü) -->
                 <div class="hidden md:flex items-center gap-4">
+                    <!-- Dil Seçeneği (Desktop) -->
+                    <button id="lang-toggle-btn" onclick="toggleLanguage()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2 rounded-xl font-bold text-sm transition-colors border border-slate-200 shadow-sm">
+                        <i class="fa-solid fa-globe text-brand-600"></i> <span id="lang-text">EN</span>
+                    </button>
+
                     <div class="flex flex-col items-end">
                         <span class="text-xs font-bold text-red-500 uppercase tracking-widest flex items-center gap-1">
                             <span class="relative flex h-2 w-2">
@@ -203,6 +216,14 @@
                 <a href="#hakkimizda" class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-medical-50 hover:text-medical-600">Hakkımızda</a>
                 <a href="#yorumlar" class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-medical-50 hover:text-medical-600">Yorumlar</a>
                 <a href="#iletisim" class="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:bg-medical-50 hover:text-medical-600">İletişim</a>
+                
+                <!-- Dil Seçeneği (Mobil) -->
+                <div class="px-3 py-2 border-t border-slate-100 mt-2">
+                    <button onclick="toggleLanguage()" class="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-3 rounded-xl font-bold text-sm transition-colors border border-slate-200">
+                        <i class="fa-solid fa-globe text-brand-600"></i> <span id="mobile-lang-text">Switch to English</span>
+                    </button>
+                </div>
+
                 <div class="mt-4 pt-4 border-t border-slate-100">
                     <a href="tel:02122309111" class="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-3 rounded-xl font-bold shadow-md shadow-red-500/20">
                         <i class="fa-solid fa-phone"></i> Acil Ara: (0212) 230 91 11
@@ -582,9 +603,42 @@
         </div>
     </a>
 
+    <!-- Google Translate Element (Arayüzde Gizli) -->
+    <div id="google_translate_element"></div>
+
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Çeviri Scriptleri -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'tr',
+                includedLanguages: 'tr,en',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <script>
+        let currentLang = 'tr';
+
+        function toggleLanguage() {
+            const select = document.querySelector('.goog-te-combo');
+            if (!select) return; // Script henüz yüklenmediyse bekle
+
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            
+            // Buton metinlerini güncelle
+            document.getElementById('lang-text').innerText = currentLang === 'tr' ? 'EN' : 'TR';
+            document.getElementById('mobile-lang-text').innerText = currentLang === 'tr' ? 'Switch to English' : 'Türkçeye Çevir';
+
+            // Google Translate'i tetikle
+            select.value = currentLang;
+            select.dispatchEvent(new Event('change'));
+        }
+
         // Animasyonları Başlat
         AOS.init({
             duration: 800,
